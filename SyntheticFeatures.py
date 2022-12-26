@@ -44,6 +44,51 @@ def make_cor(y):
   return np.array(cor_vars).transpose()
 
 
+# make 2 correlated features when n_class => 2
+# this is more general than make_cor which works only when n_class=2
+# works by adding 1 to the y value and modding 
+# flips 30% of y values
+
+def make_cor_adv(y, n_class=4):
+  n_ind = int(0.3*len(y))
+  cor_vars = []
+  for i in range(2):
+    random.seed(0)
+    np.random.seed(0)
+    cor_i = y.copy()
+    ind = random.sample(range(len(y)), n_ind)
+    adjust = np.random.randint(n_class, size=n_ind)
+    cor_i[ind] = (cor_i[ind]+adjust)%n_class
+    cor_vars.append(cor_i)
+  return np.array(cor_vars).transpose()
+
+
+
+def read_df():
+  # import the table showing which LED segments light up for each character
+  df = pd.read_csv('16_segment_truth_table2.csv')
+  df = df.fillna(0)
+  df.index = df.iloc[:,0].values
+  df.drop(columns='char', inplace=True)
+  df = df.astype(int)
+  return df
+
+
+
+def r_total(r_array):
+  r_sum = 0
+  for k in range(5):
+    rk_sum = 1
+    for j in range(5):
+      if j!=k:
+        rk_sum = rk_sum*r_array[j]
+    r_sum = r_sum + rk_sum
+  return np.product(r_array)/r_sum
+
+
+
+
+
 
 class FeaturesGenerator():
     # def __init__(self) -> None:
@@ -79,9 +124,68 @@ class FeaturesGenerator():
       return features, y
 
 
-#============================ Testing
-obj = FeaturesGenerator()
-X, y = obj.orand(seed=1)
-X, y = obj.andor()
 
+    def adder(self, n_obs=50,n_I=92, seed=0):
+      np.random.seed(seed)
+      red = lnot(gen_3()).astype(int)
+      rr = np.hstack([gen_3(), red])
+      q=n_obs//8
+      r=n_obs%8
+      rr_exp = np.vstack([np.repeat(rr,q, axis=0),rr[:r,:]])
+      irlvnt = np.random.randint(2, size=[n_obs,n_I])
+      y1 = lxor(lxor(rr_exp[:,0], rr_exp[:,1]), 
+                rr_exp[:,2]).astype(int)
+      y2 = lor(land(rr_exp[:,0], rr_exp[:,1]), 
+              land(rr_exp[:,2], lxor(rr_exp[:,0], rr_exp[:,1]))).astype(int)
+      y = [y1[j] + 2*y2[j] for j in range(len(y1))]
+      cor = make_cor_adv(np.array(y))
+      features = np.hstack([rr_exp, cor, irlvnt])
+      return features, y
+
+    
+    def led(self, n_obs=180, n_I=66, seed=0, df=None):
+      
+      if not df:
+        df = read_df()
+
+      np.random.seed(seed)
+      rlvnt = df.values
+      red = np.logical_not(rlvnt)
+      rr = np.hstack([rlvnt, red])
+      d = rlvnt.shape[0]
+      q=n_obs//d
+      r=n_obs%d
+      rr_exp = np.vstack([np.repeat(rr, q, axis=0), rr[:r,:]])
+      irlvnt = np.random.randint(2, size=[n_obs,n_I])
+      y = np.array(range(36))
+      y = np.hstack([np.repeat(y, q), y[:r]])
+      cor = make_cor_adv(y, n_class=36)
+      features = np.hstack([rr_exp, cor, irlvnt])
+      return features, y
+    
+    def prc(self, n_obs,n_I, seed):
+      np.random.seed(seed)
+      rlvnt = 3 + np.random.randn(n_obs,5)/3
+      red = 2*rlvnt+3   #redundant features are linear transform of relevant variables
+      rr = np.hstack([rlvnt, red])
+
+      irlvnt = 3 + np.random.randn(n_obs,n_I//2)/3
+      irlvnt = np.hstack([irlvnt, 3+np.random.rand(n_obs,n_I//2)])
+      
+      features = np.hstack([rr, irlvnt])
+      y = [r_total(features[j,:5]) for j in range(features.shape[0])]
+      return features, y
+
+
+    
+
+
+
+#============================ Testing
+generator = FeaturesGenerator()
+X, y = generator.orand(seed=1)
+X, y = generator.andor()
+X, y = generator.adder(n_obs=50,n_I=92, seed=0)
+X, y = generator.led(180, 90)
+X, y = generator.prc(50, 90, 0)
 print(X, y)
