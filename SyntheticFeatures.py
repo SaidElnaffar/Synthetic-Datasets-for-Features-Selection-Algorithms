@@ -94,7 +94,7 @@ class FeaturesGenerator():
     # def __init__(self) -> None:
     #  pass
     # ===============================================
-    def orand(self, n_obs=50,n_I=92, seed=0):
+    def orand(self, n_obs=50,n_I=92, seed=0, csv_file:str = None):
       np.random.seed(seed)
       red = lnot(gen_3()).astype(int) #redundant variables
       rr = np.hstack([gen_3(), red]) #rlvnt & rdnt joined
@@ -106,6 +106,11 @@ class FeaturesGenerator():
               lor(rr_exp[:,1], rr_exp[:,2])).astype(int) #calculate y according to the formula
       cor = make_cor(y)
       features = np.hstack([rr_exp,cor, irlvnt])
+
+      # Save to CSV
+      if csv_file:
+          np.savetxt(csv_file, np.column_stack( (features, y) ), delimiter=',', fmt='%d')
+
       return features, y
 
     # ===============================================
@@ -163,6 +168,7 @@ class FeaturesGenerator():
       features = np.hstack([rr_exp, cor, irlvnt])
       return features, y
     
+    #==================================================
     def prc(self, n_obs,n_I, seed):
       np.random.seed(seed)
       rlvnt = 3 + np.random.randn(n_obs,5)/3
@@ -176,3 +182,10 @@ class FeaturesGenerator():
       y = [r_total(features[j,:5]) for j in range(features.shape[0])]
       return features, y
 
+    #==================================================
+    def load(self, csv_file):
+      assert csv_file
+      all = np.loadtxt(csv_file, delimiter=',', dtype=int)
+      features, y = all[:, :-1], all[:, -1]
+      return features, y
+      
