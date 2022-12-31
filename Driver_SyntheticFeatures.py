@@ -2,7 +2,8 @@ from SyntheticFeatures import FeaturesGenerator
 
 #============================ Testing
 generator = FeaturesGenerator()
-X, y = generator.orand(seed=1, csv_file='orand.csv')
+#X, y = generator.orand(seed=1, csv_file='orand.csv')
+X, y = generator.andor(csv_file='andor.csv')
 
 '''
 X, y = generator.andor()
@@ -11,9 +12,10 @@ X, y = generator.led(180, 90)
 X, y = generator.prc(50, 90, 0)
 '''
 
-print(X)
-print('Target: ', y)
+# print(X)
+# print('Target: ', y)
 print('********************************************')
 all = generator.load('orand.csv')
+#all = generator.load('andor.csv')
 print( all[0], all[1])
 

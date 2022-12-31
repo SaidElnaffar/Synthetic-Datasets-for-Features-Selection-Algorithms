@@ -91,10 +91,47 @@ def r_total(r_array):
 
 
 class FeaturesGenerator():
-    # def __init__(self) -> None:
-    #  pass
+    def __init__(self, seed=0) -> None:
+      self.seed = seed
+      self.features = None
+      self.y = None
+
+    #==================================================
+    def load(self, csv_file):
+      assert csv_file
+      all = np.loadtxt(csv_file, delimiter=',', dtype=int)
+      features, y = all[:, :-1], all[:, -1]
+      return features, y
+
+    #==================================================
+    def saveCSV(self, csv_file, method:str, seed, n_obs, relevant, cor, irrelevant):
+      assert csv_file
+      # Save to CSV
+      with open(csv_file, 'w') as f:
+        #np.savetxt(csv_file, np.column_stack( (features, y) ), delimiter=',', fmt='%d', comments="#")
+        f.write(f"# {'='*50}\n")
+        f.write(f'# The below features have been synthesized with the following specs:\n')
+        f.write(f'# Synthetic Method: {method}.\n')
+
+        f.write(f'# Seed: {seed}.\n')
+        f.write(f'# {n_obs } examples (rows) are generated.\n')
+
+        f.write(f'# {len(self.features[0])} total features (columns) appear in the following order: \n')
+
+        f.write(f'# {relevant} relevant features.\n')
+        f.write(f'# {cor} correlated features. \n')
+        f.write(f'# {irrelevant} irrelevant features. \n')
+
+        f.write(f"# {'='*50}\n")
+
+        np.savetxt(f, np.column_stack( (self.features, self.y) ), delimiter=',', fmt='%d', comments="#")
+
+
     # ===============================================
-    def orand(self, n_obs=50,n_I=92, seed=0, csv_file:str = None):
+    def orand(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
+      # If no seed is sent, then use the default one of the generator instance
+      seed = self.seed if not seed else seed
+
       np.random.seed(seed)
       red = lnot(gen_3()).astype(int) #redundant variables
       rr = np.hstack([gen_3(), red]) #rlvnt & rdnt joined
@@ -102,19 +139,23 @@ class FeaturesGenerator():
       r=n_obs%8
       rr_exp = np.vstack([np.repeat(rr,q, axis=0),rr[:r,:]]) #replicate rr according to n_obs
       irlvnt = np.random.randint(2, size=[n_obs,n_I], )
-      y = land(rr_exp[:,0], 
+      
+      self.y = land(rr_exp[:,0], 
               lor(rr_exp[:,1], rr_exp[:,2])).astype(int) #calculate y according to the formula
-      cor = make_cor(y)
-      features = np.hstack([rr_exp,cor, irlvnt])
+      cor = make_cor(self.y)
+      self.features = np.hstack([rr_exp, cor, irlvnt])
+      
+      # Save to file
+      self.saveCSV(csv_file, "ORAND", seed, n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
 
-      # Save to CSV
-      if csv_file:
-          np.savetxt(csv_file, np.column_stack( (features, y) ), delimiter=',', fmt='%d')
+      return self.features, self.y
 
-      return features, y
-
-    # ===============================================
-    def andor(self, n_obs=50,n_I=90, seed=0):
+    ##################################################################
+    def andor(self, n_obs=50,n_I=90, seed=None, csv_file:str = None):
+      # If no seed is sent, then use the default one of the generator instance
+      seed = self.seed if not seed else seed
+      
+      
       np.random.seed(seed)
       red = lnot(gen_4()).astype(int)
       rr = np.hstack([gen_4(), red])
@@ -122,15 +163,23 @@ class FeaturesGenerator():
       r=n_obs%16
       rr_exp = np.vstack([np.repeat(rr,q, axis=0),rr[:r,:]])
       irlvnt = np.random.randint(2, size=[n_obs,n_I])
-      y = lor(land(rr_exp[:,0], rr_exp[:,1]), 
+      self.y = lor(land(rr_exp[:,0], rr_exp[:,1]), 
               land(rr_exp[:,2], rr_exp[:,3])).astype(int)
-      cor = make_cor(y)
-      features = np.hstack([rr_exp, cor, irlvnt])
-      return features, y
+      cor = make_cor(self.y)
+      self.features = np.hstack([rr_exp, cor, irlvnt])
+
+      # Save to file
+      self.saveCSV(csv_file, "ANDOR", seed, n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+
+      return self.features, self.y
 
 
+    ##################################################################
+    def adder(self, n_obs=50,n_I=92, seed=None):
 
-    def adder(self, n_obs=50,n_I=92, seed=0):
+      # If no seed is sent, then use the default one of the generator instance
+      seed = self.seed if not seed else seed
+
       np.random.seed(seed)
       red = lnot(gen_3()).astype(int)
       rr = np.hstack([gen_3(), red])
@@ -147,9 +196,11 @@ class FeaturesGenerator():
       features = np.hstack([rr_exp, cor, irlvnt])
       return features, y
 
-    
-    def led(self, n_obs=180, n_I=66, seed=0, df=None):
-      
+    ##################################################################
+    def led(self, n_obs=180, n_I=66, seed=None, df=None):
+      # If no seed is sent, then use the default one of the generator instance
+      seed = self.seed if not seed else seed
+
       if not df:
         df = read_df()
 
@@ -168,8 +219,11 @@ class FeaturesGenerator():
       features = np.hstack([rr_exp, cor, irlvnt])
       return features, y
     
-    #==================================================
-    def prc(self, n_obs,n_I, seed):
+    ##################################################################
+    def prc(self, n_obs,n_I, seed=None):
+      # If no seed is sent, then use the default one of the generator instance
+      seed = self.seed if not seed else seed
+
       np.random.seed(seed)
       rlvnt = 3 + np.random.randn(n_obs,5)/3
       red = 2*rlvnt+3   #redundant features are linear transform of relevant variables
@@ -182,10 +236,4 @@ class FeaturesGenerator():
       y = [r_total(features[j,:5]) for j in range(features.shape[0])]
       return features, y
 
-    #==================================================
-    def load(self, csv_file):
-      assert csv_file
-      all = np.loadtxt(csv_file, delimiter=',', dtype=int)
-      features, y = all[:, :-1], all[:, -1]
-      return features, y
-      
+      ##################################################################
