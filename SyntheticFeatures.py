@@ -64,17 +64,6 @@ def make_cor_adv(y, flipping_ratio, n_class=4):
 
 
 
-def read_df():
-  # import the table showing which LED segments light up for each character
-  df = pd.read_csv('16_segment_truth_table2.csv')
-  df = df.fillna(0)
-  df.index = df.iloc[:,0].values
-  df.drop(columns='char', inplace=True)
-  df = df.astype(int)
-  return df
-
-
-
 def r_total(r_array):
   r_sum = 0
   for k in range(5):
@@ -99,14 +88,14 @@ class FeaturesGenerator():
 
     #==================================================
     def load(self, csv_file):
-      assert csv_file
+      assert csv_file, "Must specify a CSV file to read dataset from it."
       all = np.loadtxt(csv_file, delimiter=',', dtype=int)
       features, y = all[:, :-1], all[:, -1]
       return features, y
 
     #==================================================
     def saveCSV(self, csv_file, method:str, seed, n_obs, relevant, cor, irrelevant, fmt="%d"):
-      assert csv_file
+      assert csv_file, "Must specify a CSV file name to store the dataset."
       # Save to CSV
       with open(csv_file, 'w') as f:
         #np.savetxt(csv_file, np.column_stack( (features, y) ), delimiter=',', fmt='%d', comments="#")
@@ -212,7 +201,13 @@ class FeaturesGenerator():
       np.random.seed(seed)
 
       if not df:
-        df = read_df()
+        # import the table showing which LED segments light up for each character
+        df = pd.read_csv('16_segment_truth_table2.csv')
+        df = df.fillna(0)
+        df.index = df.iloc[:,0].values
+        df.drop(columns='char', inplace=True)
+        df = df.astype(int)
+
 
       rlvnt = df.values
       red = np.logical_not(rlvnt)
