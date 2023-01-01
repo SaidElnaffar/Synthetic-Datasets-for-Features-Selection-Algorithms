@@ -33,12 +33,12 @@ def gen_4():
 
 # create 2 correlated features in case of binary target (y) 
 # by randomly fliping 30% of the values of y  
-def make_cor(y):
+def make_cor(y, flipping_ratio):
   random.seed(0)
   cor_vars = []
   for i in range(2):
     cor_i = y.copy()
-    ind = random.sample(range(len(y)), int(0.3*len(y)))
+    ind = random.sample(range(len(y)), int(flipping_ratio*len(y)))
     cor_i[ind] = lnot(cor_i[ind])
     cor_vars.append(cor_i)
   return np.array(cor_vars).transpose()
@@ -49,8 +49,8 @@ def make_cor(y):
 # works by adding 1 to the y value and modding 
 # flips 30% of y values
 
-def make_cor_adv(y, n_class=4):
-  n_ind = int(0.3*len(y))
+def make_cor_adv(y, flipping_ratio, n_class=4):
+  n_ind = int(flipping_ratio*len(y))
   cor_vars = []
   for i in range(2):
     random.seed(0)
@@ -91,8 +91,9 @@ def r_total(r_array):
 
 
 class FeaturesGenerator():
-    def __init__(self, seed=0) -> None:
+    def __init__(self, seed:float=0, flipping_ratio:float=0.3) -> None:
       self.seed = seed
+      self.flipping_ratio = flipping_ratio
       self.features = None
       self.y = None
 
@@ -104,7 +105,7 @@ class FeaturesGenerator():
       return features, y
 
     #==================================================
-    def saveCSV(self, csv_file, method:str, seed, n_obs, relevant, cor, irrelevant):
+    def saveCSV(self, csv_file, method:str, seed, n_obs, relevant, cor, irrelevant, fmt="%d"):
       assert csv_file
       # Save to CSV
       with open(csv_file, 'w') as f:
@@ -119,12 +120,15 @@ class FeaturesGenerator():
         f.write(f'# {len(self.features[0])} total features (columns) appear in the following order: \n')
 
         f.write(f'# {relevant} relevant features.\n')
-        f.write(f'# {cor} correlated features. \n')
+        
+        if cor>0:
+          f.write(f'# {cor} correlated features. \n')
+        
         f.write(f'# {irrelevant} irrelevant features. \n')
 
         f.write(f"# {'='*50}\n")
 
-        np.savetxt(f, np.column_stack( (self.features, self.y) ), delimiter=',', fmt='%d', comments="#")
+        np.savetxt(f, np.column_stack( (self.features, self.y) ), delimiter=',', fmt=fmt, comments="#")
 
 
     # ===============================================
@@ -142,7 +146,7 @@ class FeaturesGenerator():
       
       self.y = land(rr_exp[:,0], 
               lor(rr_exp[:,1], rr_exp[:,2])).astype(int) #calculate y according to the formula
-      cor = make_cor(self.y)
+      cor = make_cor(self.y, self.flipping_ratio)
       self.features = np.hstack([rr_exp, cor, irlvnt])
       
       # Save to file
@@ -165,7 +169,7 @@ class FeaturesGenerator():
       irlvnt = np.random.randint(2, size=[n_obs,n_I])
       self.y = lor(land(rr_exp[:,0], rr_exp[:,1]), 
               land(rr_exp[:,2], rr_exp[:,3])).astype(int)
-      cor = make_cor(self.y)
+      cor = make_cor(self.y, self.flipping_ratio)
       self.features = np.hstack([rr_exp, cor, irlvnt])
 
       # Save to file
@@ -175,7 +179,7 @@ class FeaturesGenerator():
 
 
     ##################################################################
-    def adder(self, n_obs=50,n_I=92, seed=None):
+    def adder(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
 
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
@@ -191,20 +195,25 @@ class FeaturesGenerator():
                 rr_exp[:,2]).astype(int)
       y2 = lor(land(rr_exp[:,0], rr_exp[:,1]), 
               land(rr_exp[:,2], lxor(rr_exp[:,0], rr_exp[:,1]))).astype(int)
-      y = [y1[j] + 2*y2[j] for j in range(len(y1))]
-      cor = make_cor_adv(np.array(y))
-      features = np.hstack([rr_exp, cor, irlvnt])
-      return features, y
+      self.y = [y1[j] + 2*y2[j] for j in range(len(y1))]
+
+      cor = make_cor_adv(np.array(self.y), self.flipping_ratio)
+      self.features = np.hstack([rr_exp, cor, irlvnt])
+
+      # Save to file
+      self.saveCSV(csv_file, "ADDER", seed, n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+
+      return self.features, self.y
 
     ##################################################################
-    def led(self, n_obs=180, n_I=66, seed=None, df=None):
+    def led(self, n_obs=180, n_I=66, seed=None, df=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
+      np.random.seed(seed)
 
       if not df:
         df = read_df()
 
-      np.random.seed(seed)
       rlvnt = df.values
       red = np.logical_not(rlvnt)
       rr = np.hstack([rlvnt, red])
@@ -214,13 +223,19 @@ class FeaturesGenerator():
       rr_exp = np.vstack([np.repeat(rr, q, axis=0), rr[:r,:]])
       irlvnt = np.random.randint(2, size=[n_obs,n_I])
       y = np.array(range(36))
-      y = np.hstack([np.repeat(y, q), y[:r]])
-      cor = make_cor_adv(y, n_class=36)
-      features = np.hstack([rr_exp, cor, irlvnt])
-      return features, y
+      self.y = np.hstack([np.repeat(y, q), y[:r]])
+
+      cor = make_cor_adv(self.y, self.flipping_ratio, n_class=36)
+      self.features = np.hstack([rr_exp, cor, irlvnt])
+
+
+      # Save to file
+      self.saveCSV(csv_file, "LED", seed, n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+
+      return self.features, self.y
     
     ##################################################################
-    def prc(self, n_obs,n_I, seed=None):
+    def prc(self, n_obs=50, n_I=90, seed=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
 
@@ -232,8 +247,13 @@ class FeaturesGenerator():
       irlvnt = 3 + np.random.randn(n_obs,n_I//2)/3
       irlvnt = np.hstack([irlvnt, 3+np.random.rand(n_obs,n_I//2)])
       
-      features = np.hstack([rr, irlvnt])
-      y = [r_total(features[j,:5]) for j in range(features.shape[0])]
-      return features, y
+      self.features = np.hstack([rr, irlvnt])
+      self.y = [r_total(self.features[j,:5]) for j in range(self.features.shape[0])]
+
+      # Save to file
+      self.saveCSV(csv_file, "PRC", seed, n_obs, len(rr[0]), -1 , len(irlvnt[0]), fmt='%f')
+
+
+      return self.features, self.y
 
       ##################################################################

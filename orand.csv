@@ -1,6 +1,8 @@
 # ==================================================
-# The below features have been synthesized with the followins specs:# Synthetic Method: ORAND.# Seed: 1.
-# No. of examples (rows): 50.
+# The below features have been synthesized with the following specs:
+# Synthetic Method: ORAND.
+# Seed: 1.
+# 50 examples (rows) are generated.
 # 100 total features (columns) appear in the following order: 
 # 6 relevant features.
 # 2 correlated features. 

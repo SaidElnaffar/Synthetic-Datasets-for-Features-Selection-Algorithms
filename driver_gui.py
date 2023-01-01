@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 
 # Create a list of options for the radio buttons
-options = ['Option 1', 'Option 2', 'Option 3']
+methods = ['ORAND', 'ANDOR', 'ADDER', 'LED', 'PRC']
 
 
 
@@ -19,7 +19,10 @@ options = ['Option 1', 'Option 2', 'Option 3']
 
 
 # Create a layout with Radio elements
-layout = [[sg.Radio(option, 1, key=option) for option in options]]
+seed = 0
+layout = [[sg.Text('Generation Method'), [sg.Radio(option, 1, key=option) for option in methods]],
+            [sg.Text('Seed'), sg.InputText(seed, key='-seed-') ]
+        ]
 
 # Create the window
 window = sg.Window('Radio Buttons', layout)
