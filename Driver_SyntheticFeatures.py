@@ -1,26 +1,51 @@
 from SyntheticFeatures import FeaturesGenerator
 
-#============================ Testing
-generator = FeaturesGenerator()
-X, y = generator.orand(seed=1, csv_file='orand.csv')
-X, y = generator.andor(csv_file='andor.csv')
-X, y = generator.adder(csv_file='adder.csv')
-X, y = generator.led(n_obs=180,n_I=90, csv_file='led.csv')
-X, y = generator.prc(50, 90, csv_file='prc.csv')
+#=====================================
+def test_case_1():
+    '''
+        Loading a previously generated and saved dataset from a CSV file.            
+    '''
+    features_generator = FeaturesGenerator()
+    X, y = features_generator.loadCSV()
+    
+    print("Features: ", X)
+    print("Target: ", y)
+#=====================================
+def test_case_2():
+    '''
+        Creating new datasets using different methods and saving them automatically to CSV files.
+    '''
+    features_generator = FeaturesGenerator()
+
+    X, y = features_generator.gen_dataset_using_ORAND(seed=1, csv_file='orand.csv')
+    print("Features: ", X)
+    print("Target: ", y)
 
 
-'''
-X, y = generator.andor()
-X, y = generator.adder(n_obs=50,n_I=92, seed=0)
-X, y = generator.led(180, 90)
-X, y = generator.prc(50, 90, 0)
-'''
 
-# print(X)
-# print('Target: ', y)
-print('********************************************')
-#all = generator.load('orand.csv')
-#all = generator.load('andor.csv')
-#X, y  = generator.load('prc.csv')
-print( X, y)
+    X, y = features_generator.gen_dataset_using_ِANDOR(csv_file='andor.csv')
+    print("Features: ", X)
+    print("Target: ", y)
 
+
+    X, y = features_generator.gen_dataset_using_ADDER(csv_file='adder.csv')
+    print("Features: ", X)
+    print("Target: ", y)
+
+    X, y = features_generator.gen_dataset_using_LED(n_obs=180,n_I=90, csv_file='led.csv')
+    print("Features: ", X)
+    print("Target: ", y)
+
+    X, y = features_generator.gen_dataset_using_PRC(50, 90, csv_file='prc.csv')
+    print("Features: ", X)
+    print("Target: ", y)
+    
+#=====================================
+
+#************ Trying the Test Cases Above
+test_case_1()
+
+test_case_2()
+
+
+#****************************************

@@ -1,3 +1,17 @@
+# Copyright 2023 Dr. Said Elnaffar and Dr. Firuz Kamalov
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#    http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import numpy as np
 from numpy import logical_or as lor
 from numpy import logical_and as land
@@ -5,7 +19,7 @@ from numpy import logical_not as lnot
 from numpy import logical_xor as lxor
 import random
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 # generate a list of all possible combinations of 3-bits
 def gen_3(): 
@@ -76,20 +90,33 @@ def r_total(r_array):
 
 
 
-
-
-
+'''
+///////////////////////////////////////////////////////////////////////////////////////////////
+A class that handles the generation of sythetic datasets for features selection algorithsm.
+//////////////////////////////////////////////////////////////////////////////////////////////
+'''
 class FeaturesGenerator():
-    def __init__(self, seed:float=0, flipping_ratio:float=0.3) -> None:
+
+  # You can specify the 
+    def __init__(self, seed:int=0, flipping_ratio:float=0.3) -> None:
       self.seed = seed
       self.flipping_ratio = flipping_ratio
       self.features = None
       self.y = None
 
     #==================================================
-    def load(self, csv_file):
+    def loadCSV(self, csv_file:str):
+      '''
+      Returns features and the target by reading them from the CSV file.
+
+              Parameters:
+                      csv_file (str): file name (full path)
+
+              Returns:
+                      feature_y (tuple): a tuple of (features, y)
+      '''
       assert csv_file, "Must specify a CSV file to read dataset from it."
-      all = np.loadtxt(csv_file, delimiter=',', dtype=int)
+      all = np.loadtxt(csv_file, delimiter=',')
       features, y = all[:, :-1], all[:, -1]
       return features, y
 
@@ -121,7 +148,7 @@ class FeaturesGenerator():
 
 
     # ===============================================
-    def orand(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
+    def gen_dataset_using_ORAND(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
 
@@ -144,7 +171,7 @@ class FeaturesGenerator():
       return self.features, self.y
 
     ##################################################################
-    def andor(self, n_obs=50,n_I=90, seed=None, csv_file:str = None):
+    def gen_dataset_using_ِANDOR(self, n_obs=50,n_I=90, seed=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
       
@@ -168,7 +195,7 @@ class FeaturesGenerator():
 
 
     ##################################################################
-    def adder(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
+    def gen_dataset_using_ADDER(self, n_obs=50,n_I=92, seed=None, csv_file:str = None):
 
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
@@ -195,7 +222,7 @@ class FeaturesGenerator():
       return self.features, self.y
 
     ##################################################################
-    def led(self, n_obs=180, n_I=66, seed=None, df=None, csv_file:str = None):
+    def gen_dataset_using_LED(self, n_obs=180, n_I=66, seed=None, df=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
       np.random.seed(seed)
@@ -230,7 +257,7 @@ class FeaturesGenerator():
       return self.features, self.y
     
     ##################################################################
-    def prc(self, n_obs=50, n_I=90, seed=None, csv_file:str = None):
+    def gen_dataset_using_PRC(self, n_obs=50, n_I=90, seed=None, csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
 
