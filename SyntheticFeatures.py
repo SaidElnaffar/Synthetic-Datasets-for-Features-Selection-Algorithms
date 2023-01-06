@@ -1,4 +1,4 @@
-# Copyright 2023 Dr. Said Elnaffar and Dr. Firuz Kamalov
+# Copyright 2023 Dr. Firuz Kamalov and Dr. Said Elnaffar 
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -222,14 +222,14 @@ class FeaturesGenerator():
       return self.features, self.y
 
     ##################################################################
-    def gen_dataset_using_LED(self, n_obs=180, n_I=66, seed=None, df=None, csv_file:str = None):
+    def gen_dataset_using_LED(self, n_obs=180, n_I=66, seed=None, df=None, config_file:str='16_segment_truth_table2.csv', csv_file:str = None):
       # If no seed is sent, then use the default one of the generator instance
       seed = self.seed if not seed else seed
       np.random.seed(seed)
 
       if not df:
         # import the table showing which LED segments light up for each character
-        df = pd.read_csv('16_segment_truth_table2.csv')
+        df = pd.read_csv(config_file, on_bad_lines='skip')
         df = df.fillna(0)
         df.index = df.iloc[:,0].values
         df.drop(columns='char', inplace=True)
