@@ -1,13 +1,13 @@
-from SyntheticFeatures import FeaturesGenerator
+from XyGenerator import XyGenerator
 
 #=====================================
 def test_case_1():
     '''
         Creating new datasets using different methods and saving them automatically to CSV files.
     '''
-    features_generator = FeaturesGenerator()
+    features_generator = XyGenerator()
 
-    X, y = features_generator.gen_dataset_using_ORAND(seed=1, csv_file='orand.csv')
+    X, y = features_generator.gen_dataset_using_ORAND(csv_file='orand.csv')
     print("Features: ", X)
     print("Target: ", y)
 
@@ -39,7 +39,7 @@ def test_case_2():
     '''
         Loading a previously generated and saved dataset from a CSV file.            
     '''
-    features_generator = FeaturesGenerator()
+    features_generator = XyGenerator()
     X, y = features_generator.loadCSV('orand.csv')
     
     print("Features: ", X)
