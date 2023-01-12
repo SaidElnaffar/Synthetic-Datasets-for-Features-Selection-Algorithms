@@ -28,7 +28,7 @@ import pandas as pd
 A class that handles the generation of sythetic datasets for features selection algorithsm.
 //////////////////////////////////////////////////////////////////////////////////////////////
 '''
-class XyGenerator():
+class XyGen():
 
   # You can specify the 
     def __init__(self, seed:int=0, flipping_ratio:float=0.3) -> None:
