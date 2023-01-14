@@ -1,17 +1,24 @@
-# Copyright 2023 Dr. Firuz Kamalov and Dr. Said Elnaffar 
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-
-#    http://www.apache.org/licenses/LICENSE-2.0
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# Software Name: XyGen
+# Copyright (c) 2023 Dr. Firuz Kamalov and Dr. Said Elnaffar
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#================================================================================
 import numpy as np
 from numpy import logical_or as lor
 from numpy import logical_and as land
@@ -157,7 +164,7 @@ class XyGen():
 
 
     # ===============================================
-    def gen_dataset_using_ORAND(self, n_obs=50,n_I=92, csv_file:str = None):
+    def gen_ORAND(self, n_obs=50,n_I=92, csv_file:str = None):
       red = lnot(self._gen_3()).astype(int) #redundant variables
       rr = np.hstack([self._gen_3(), red]) #rlvnt & rdnt joined
       q=n_obs//8
@@ -177,7 +184,7 @@ class XyGen():
       return self.features, self.y
 
     ##################################################################
-    def gen_dataset_using_ِANDOR(self, n_obs=50,n_I=90, csv_file:str = None):
+    def gen_ANDOR(self, n_obs=50,n_I=90, csv_file:str = None):
       red = lnot(self._gen_4()).astype(int)
       rr = np.hstack([self._gen_4(), red])
       q=n_obs//16
@@ -198,7 +205,7 @@ class XyGen():
       return self.features, self.y
 
     ##################################################################
-    def gen_dataset_using_ADDER(self, n_obs=50,n_I=92, csv_file:str = None):
+    def gen_ADDER(self, n_obs=50,n_I=92, csv_file:str = None):
 
       red = lnot(self._gen_3()).astype(int)
       rr = np.hstack([self._gen_3(), red])
@@ -223,7 +230,9 @@ class XyGen():
       return self.features, self.y
 
     ##################################################################
-    def gen_dataset_using_LED(self, n_obs=180, n_I=66, df=None, config_file:str='16_segment_truth_table2.csv', csv_file:str = None):
+    def gen_LED(self, n_obs=180, n_I=66, df=None, 
+    config_file:str="https://raw.githubusercontent.com/SaidElnaffar/Synthetic-Datasets-for-Features-Selection-Algorithms/0ae683f12ae664291d195aff364dbeaa2b4014d9/16_segment_truth_table2.csv", 
+    csv_file:str = None):
 
       if not df:
         # import the table showing which LED segments light up for each character
@@ -258,7 +267,7 @@ class XyGen():
       return self.features, self.y
     
     ##################################################################
-    def gen_dataset_using_PRC(self, n_obs=50, n_I=90, csv_file:str = None):
+    def gen_PRC(self, n_obs=50, n_I=90, csv_file:str = None):
 
       #rlvnt = 3 + np.random.randn(n_obs,5)/3
       rlvnt = 3 + self.random.standard_normal( (n_obs,5) )/3

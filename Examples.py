@@ -5,31 +5,38 @@ def test_case_1():
     '''
         Creating new datasets using different methods and saving them automatically to CSV files.
     '''
+    path = ""
+
     features_generator = XyGen()
 
-    X, y = features_generator.gen_dataset_using_ORAND(csv_file='orand.csv')
+    X, y = features_generator.gen_ORAND(csv_file= path+'orand.csv')
+    print('Using ORAND to generate features:')
     print("Features: ", X)
     print("Target: ", y)
 
 
 
-    X, y = features_generator.gen_dataset_using_ِANDOR(csv_file='andor.csv')
+    X, y = features_generator.gen_ANDOR(csv_file= path+'andor.csv')
+    print('Using ANDOR to generate features:')
     print("Features: ", X)
     print("Target: ", y)
 
 
-    X, y = features_generator.gen_dataset_using_ADDER(csv_file='adder.csv')
+    X, y = features_generator.gen_ADDER(csv_file= path+'adder.csv')
+    print('Using ADDER to generate features:')
     print("Features: ", X)
     print("Target: ", y)
 
 
-    url = "https://raw.githubusercontent.com/SaidElnaffar/Synthetic-Datasets-for-Features-Selection-Algorithms/0ae683f12ae664291d195aff364dbeaa2b4014d9/16_segment_truth_table2.csv"
     
-    X, y = features_generator.gen_dataset_using_LED(n_obs=180,n_I=90, config_file=url, csv_file='led.csv')
+    
+    X, y = features_generator.gen_LED(n_obs=180,n_I=90, csv_file= path+'led.csv')
+    print('Using LED to generate features:')
     print("Features: ", X)
     print("Target: ", y)
 
-    X, y = features_generator.gen_dataset_using_PRC(50, 90, csv_file='prc.csv')
+    X, y = features_generator.gen_PRC(50, 90, csv_file= path+'prc.csv')
+    print('Using PRC to generate features:')
     print("Features: ", X)
     print("Target: ", y)
     
@@ -39,8 +46,10 @@ def test_case_2():
     '''
         Loading a previously generated and saved dataset from a CSV file.            
     '''
+    path = ""
+
     features_generator = XyGen()
-    X, y = features_generator.loadCSV('orand.csv')
+    X, y = features_generator.loadCSV(path+'orand.csv')
     
     print("Features: ", X)
     print("Target: ", y)
