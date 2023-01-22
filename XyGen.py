@@ -155,7 +155,8 @@ class XyGen():
       self.features = np.hstack([rr_exp, cor, irlvnt])
       
       # Save to file
-      self.saveCSV(csv_file, "ORAND", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+      if csv_file is not None:
+        self.saveCSV(csv_file, "ORAND", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
 
       return self.features, self.y
 
@@ -176,7 +177,8 @@ class XyGen():
       self.features = np.hstack([rr_exp, cor, irlvnt])
 
       # Save to file
-      self.saveCSV(csv_file, "ANDOR", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+      if csv_file is not None:
+        self.saveCSV(csv_file, "ANDOR", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
 
       return self.features, self.y
 
@@ -201,7 +203,8 @@ class XyGen():
       self.features = np.hstack([rr_exp, cor, irlvnt])
 
       # Save to file
-      self.saveCSV(csv_file, "ADDER", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+      if csv_file is not None:
+        self.saveCSV(csv_file, "ADDER", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
 
       return self.features, self.y
 
@@ -238,7 +241,8 @@ class XyGen():
 
 
       # Save to file
-      self.saveCSV(csv_file, "LED", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
+      if csv_file is not None:
+        self.saveCSV(csv_file, "LED", n_obs, len(rr_exp[0]), len(cor[0]), len(irlvnt[0]))
 
       return self.features, self.y
     
@@ -263,7 +267,8 @@ class XyGen():
       self.y = [self._r_total(self.features[j,:5]) for j in range(self.features.shape[0])]
 
       # Save to file
-      self.saveCSV(csv_file, "PRC", n_obs, len(rr[0]), -1 , len(irlvnt[0]), fmt='%f')
+      if csv_file is not None:
+        self.saveCSV(csv_file, "PRC", n_obs, len(rr[0]), -1 , len(irlvnt[0]), fmt='%f')
 
 
       return self.features, self.y
