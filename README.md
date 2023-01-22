@@ -5,6 +5,16 @@ XyGen is a machine learning library that assists researchers in generating synth
 
 To use the XyGen module, you simply import the XyGen class from the XyGen module and instantiate a generator object from that class. Using this generator object you can generate features that can be used for benchmarking a suite of features selection algorithms. The synthesized datasets can be saved and loaded from CSV.
 
+## Installation
+To use the XyGen module, you need to:
+
+1. Ensure that numpy and pandas are installed.
+2. Download the file named "XyGen.py" to their local machine.
+3. In the Python script where the library will be used, add the line "import XyGen" at the top of the script.
+
+The library is now ready to be used. Some examples are below.
+
+
 ## Usage/Examples
 
 from XyGen import XyGen
