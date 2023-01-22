@@ -17,6 +17,8 @@ The library is now ready to be used. Some examples are below.
 
 ## Usage/Examples
 
+### Basic Dataset Generation using the XyGen generator
+``` Python
 # --- Basic usage: Generating X (features) and y (target) attributes
 import numpy as np
 from XyGen import XyGen
@@ -33,7 +35,8 @@ data_generator = XyGen(seed=0)
 X1, y1 = data_generator.gen_ORAND(n_obs=50, n_I=92, csv_file='orand.csv')
 X2, y2 = data_generator.gen_LED(csv_file='led.csv')
 
-#//////////////////////////////////////////////////////////////////////////////////
+### Trying generated XyGen-generated datasets with some Feature Selection algorithms
+``` Python
 # --- Trying generated XyGen-generated datasets with some Feature Selection algorithms
 
 import matplotlib.pyplot as plt
