@@ -35,9 +35,9 @@ data_generator = XyGen(seed=0)
 X1, y1 = data_generator.gen_ORAND(n_obs=50, n_I=92, csv_file='orand.csv')
 X2, y2 = data_generator.gen_LED(csv_file='led.csv')
 ```
-### Trying generated XyGen-generated datasets with some Feature Selection algorithms
+### Trying XyGen-generated datasets with some Feature Selection algorithms
 ``` Python
-# --- Trying generated XyGen-generated datasets with some Feature Selection algorithms
+# --- Trying XyGen-generated datasets with some Feature Selection algorithms
 
 import matplotlib.pyplot as plt
 from sklearn.feature_selection import SelectKBest
